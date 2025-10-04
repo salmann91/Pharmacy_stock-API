@@ -1,4 +1,4 @@
-const Medicine = require('../models/Medicine');
+const Medicine = require('../models/medicine');
 const Batch = require('../models/Batch');
 
 const medicineController = {

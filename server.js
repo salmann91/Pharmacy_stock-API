@@ -5,7 +5,7 @@ const morgan = require('morgan');
 require('dotenv').config();
 
 const medicineRoutes = require('./routes/medicine');
-const { connectDB } = require('./config/database');
+const { connectDB } = require('./config/database-sqlite');
 
 const app = express();
 const PORT = process.env.PORT || 3000;

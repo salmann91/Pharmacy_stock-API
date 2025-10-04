@@ -1,12 +1,11 @@
-const { query } = require('../config/database');
+const { query } = require('../config/database-sqlite');
 
 class Medicine {
   static async create(medicineData) {
     const { name, barcode, description, category, manufacturer } = medicineData;
     const sql = `
       INSERT INTO medicines (name, barcode, description, category, manufacturer)
-      VALUES ($1, $2, $3, $4, $5)
-      RETURNING *
+      VALUES (?, ?, ?, ?, ?)
     `;
     const result = await query(sql, [name, barcode, description, category, manufacturer]);
     return result.rows[0];
@@ -36,7 +35,7 @@ class Medicine {
         COUNT(b.id) as batch_count
       FROM medicines m
       LEFT JOIN batches b ON m.id = b.medicine_id
-      WHERE m.id = $1
+      WHERE m.id = ?
       GROUP BY m.id
     `;
     const result = await query(sql, [id]);
@@ -52,7 +51,7 @@ class Medicine {
         MIN(b.expiry_date) as nearest_expiry
       FROM medicines m
       LEFT JOIN batches b ON m.id = b.medicine_id
-      WHERE m.barcode = $1
+      WHERE m.barcode = ?
       GROUP BY m.id
     `;
     const result = await query(sql, [barcode]);
@@ -63,16 +62,15 @@ class Medicine {
     const { name, description, category, manufacturer } = medicineData;
     const sql = `
       UPDATE medicines 
-      SET name = $1, description = $2, category = $3, manufacturer = $4, updated_at = CURRENT_TIMESTAMP
-      WHERE id = $5
-      RETURNING *
+      SET name = ?, description = ?, category = ?, manufacturer = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
     `;
     const result = await query(sql, [name, description, category, manufacturer, id]);
     return result.rows[0];
   }
 
   static async delete(id) {
-    const sql = 'DELETE FROM medicines WHERE id = $1 RETURNING *';
+    const sql = 'DELETE FROM medicines WHERE id = ?';
     const result = await query(sql, [id]);
     return result.rows[0];
   }
@@ -100,8 +98,8 @@ class Medicine {
         'expiring_soon' as alert_type
       FROM medicines m
       JOIN batches b ON m.id = b.medicine_id
-      WHERE b.expiry_date <= CURRENT_DATE + INTERVAL '30 days'
-        AND b.expiry_date > CURRENT_DATE
+      WHERE b.expiry_date <= date('now', '+30 days')
+        AND b.expiry_date > date('now')
       
       ORDER BY alert_type, total_stock
     `;

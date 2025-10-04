@@ -5,7 +5,7 @@ const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
   database: process.env.DB_NAME || 'pharmacydb',
   password: process.env.DB_PASSWORD || 'md0341',
-  port: process.env.DB_PORT || 3000,
+  port: process.env.DB_PORT || 5432,
 });
 
 const connectDB = async () => {

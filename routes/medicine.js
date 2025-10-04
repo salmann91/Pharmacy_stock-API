@@ -6,14 +6,14 @@ const { validateMedicine, validateBatch } = require('../middleware/validation');
 // Get all medicines with stock information
 router.get('/', medicineController.getAllMedicines);
 
-// Get medicine by ID
-router.get('/:id', medicineController.getMedicineById);
+// Get stock alerts (low stock and expiring medicines) - MUST be before /:id
+router.get('/alerts', medicineController.getStockAlerts);
 
 // Search medicine by barcode
 router.get('/barcode/:barcode', medicineController.getMedicineByBarcode);
 
-// Get stock alerts (low stock and expiring medicines)
-router.get('/alerts', medicineController.getStockAlerts);
+// Get medicine by ID
+router.get('/:id', medicineController.getMedicineById);
 
 // Create new medicine
 router.post('/', validateMedicine, medicineController.createMedicine);
